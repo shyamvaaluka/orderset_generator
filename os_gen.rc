@@ -2,11 +2,11 @@ Magic 271485
 Revision Verdi_U-2023.03-SP2-9
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
-viewPort 0 25 1366 339 357 84
+viewPort 0 25 1366 374 357 84
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
-openDirFile -d / "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice2.sv/dump3.fsdb"
+openDirFile -d / "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice/dump3.fsdb"
 
 ; file time scale:
 ; fileTimeScale ### s|ms|us|ns|ps
@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 0.000000 2162705.613738
-cursor 175000.000000
+zoom 1962228.800000 2196724.800000
+cursor 2185000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 3
+top 26
 ; marker line index
-markerPos 5
+markerPos 32
 
 ; event list
 ; addEvent event_name event_expression
@@ -46,12 +46,12 @@ curSTATUS ByChange
 
 
 addGroup "G1"
-activeDirFile "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice2.sv/dump3.fsdb"
+activeDirFile "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice/dump3.fsdb"
 addSignal -h 15 /orderset_top/DUT/clk
 addSignal -h 15 -holdScope rst
-addSignal -h 15 -UNSIGNED -UDEC -holdScope ts1_cnt[0:15]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope ts2_cnt[0:15]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope ltssm_states_h[0:15]
+addSignal -h 15 -holdScope ts1_cnt[0:15]
+addSignal -h 15 -holdScope ts2_cnt[0:15]
+addSignal -h 15 -holdScope ltssm_states_h[0:15]
 addSignal -h 15 -UNSIGNED -HEX -holdScope command[31:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope next_state[1:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope state[1:0]
@@ -76,7 +76,10 @@ addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[15][15:0]
 addGroup "G2"
 addSignal -h 15 /orderset_top/DUT/clk
 addSignal -h 15 -UNSIGNED -UDEC /orderset_top/DUT/genblk1[0]/DUT/cnt[31:0]
-addSignal -h 15 -holdScope fifo_full
+addSignal -h 15 -UNSIGNED -UDEC /orderset_top/DUT/ts1_cnt[0][31:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope ts2_cnt[0][31:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope ltssm_states_h[0][2:0]
+addSignal -h 15 /orderset_top/DUT/genblk1[0]/DUT/fifo_full
 addSignal -h 15 -holdScope load
 addSignal -h 15 -holdScope fifo_mem[0:15]
 addSignal -expanded -h 15 /orderset_top/DUT/temp1[0:15]
