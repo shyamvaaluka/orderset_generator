@@ -1,7 +1,11 @@
-`include "../pratice2.sv/orderset.sv"
+`include "orderset.sv"
 `timescale 1ns/1ps
 module ltssm(input clk,
-                   rst);
+                   rst,
+             input[15:0]pipe_rx_data[0:15],
+	     input[2:0]ltssm_states_h[0:15],
+	     input[31:0]command,
+             output reg[15:0]pipe_tx_data[0:15]);
   localparam DETECT=0;
   localparam POLLING_ACTIVE=1;
   localparam POLLING_CONFIG=2;
@@ -12,16 +16,32 @@ module ltssm(input clk,
   
   reg[8*20:1] state_ascii;
 
+  reg[31:0]ts1_sent_cnt[0:15];
+  reg[31:0]ts2_sent_cnt[0:15];
+  reg[31:0]ts1_rcvd_cnt[0:15];
+  reg[31:0]ts2_rcvd_cnt[0:15];
+  reg[31:0]ts_count[0:15];
+
+  orderset DUT(.clk(clk),
+               .rst(rst),
+               .ltssm_states_h(ltssm_states_h),
+	       .command(command),
+	       .pipe_tx_data(pipe_tx_data),
+	       .pipe_rx_data(pipe_rx_data),
+	       .ts1_cnt(ts1_sent_cnt),
+	       .ts2_cnt(ts2_sent_cnt),
+	       .cnt(ts_count)
+              );
   
   
-  always@(posedge clk) begin
+  always_ff@(posedge clk) begin
     if(rst)
       state<=0;
     else
       state<=next_state;
   end
   
-  always@(posedge clk) begin
+  always_ff@(posedge clk) begin
     if(rst) begin
       d_to<=0;
       pa_to<=0;
@@ -82,21 +102,30 @@ module ltssm(input clk,
           next_state=POLLING_ACTIVE;
         else
           next_state=DETECT;
+	  ltssm_states_h=0;
       end
       
       POLLING_ACTIVE: begin
-        if(pa_to == 200)//24ms
-           next_state=POLLING_CONFIG;
-        else
-           next_state=POLLING_ACTIVE;
+        if(pa_to != 200 && (ts1_sent_cnt == 12 && ts2_rcvd_cnt == 8))//24ms
+          next_state=POLLING_CONFIG;
+	else if(pa_to == 200 || (ts1_sent_cnt != 12 || ts2_rcvd_cnt != 8))
+	  next_state=DETECT;
+	else
+          next_state=POLLING_ACTIVE;
+	  ltssm_states_h=1;
+	  command=0;
       end
       
       
        POLLING_CONFIG: begin
-         if(pc_to == 300)//48ms
-           next_state= CONFIGURATION;
+         if(pc_to != 300 && (ts1_sent_cnt == 16 && ts2_rcvd_cnt == 8))//48ms
+           next_state=CONFIGURATION;
+        else if(pc_to == 300 && (ts1_sent_cnt != 16 || ts2_rcvd_cnt != 8))
+	   next_state=DETECT;
         else
            next_state=POLLING_CONFIG;
+	   ltssm_states_h=2;
+	   command=1;
       end
       
        CONFIGURATION: begin
@@ -104,10 +133,23 @@ module ltssm(input clk,
            next_state= DETECT;
         else
            next_state=CONFIGURATION;
+	   ltssm_states_h=3;
+	   command=2;
       end
       
-      default: next_state=DETECT;
+      default: begin
+                 next_state=DETECT;
+	         ltssm_states_h=0;
+		 command=2;
+	       end
     endcase
+  end
+
+
+  always_ff@(posedge clk)begin
+     
+
+
   end
   
 endmodule
