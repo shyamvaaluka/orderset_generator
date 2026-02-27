@@ -1,0 +1,154 @@
+Magic 271485
+Revision Verdi_U-2023.03-SP2-9
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1366 339 357 84
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice2.sv/dump3.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 2162705.613738
+cursor 175000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 3
+; marker line index
+markerPos 5
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/proj/breck_xco_cpm5brp_nobkup/undisree/BRECK/pratice2.sv/dump3.fsdb"
+addSignal -h 15 /orderset_top/DUT/clk
+addSignal -h 15 -holdScope rst
+addSignal -h 15 -UNSIGNED -UDEC -holdScope ts1_cnt[0:15]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope ts2_cnt[0:15]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope ltssm_states_h[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope command[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope next_state[1:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope state[1:0]
+addSignal -h 15 -UNSIGNED -ASC -holdScope os_state_ascii[160:1]
+addSignal -expanded -h 15 -holdScope pipe_tx_data[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[0][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[1][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[2][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[3][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[4][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[5][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[6][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[7][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[8][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[9][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[10][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[11][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[12][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[13][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[14][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pipe_tx_data[15][15:0]
+addGroup "G2"
+addSignal -h 15 /orderset_top/DUT/clk
+addSignal -h 15 -UNSIGNED -UDEC /orderset_top/DUT/genblk1[0]/DUT/cnt[31:0]
+addSignal -h 15 -holdScope fifo_full
+addSignal -h 15 -holdScope load
+addSignal -h 15 -holdScope fifo_mem[0:15]
+addSignal -expanded -h 15 /orderset_top/DUT/temp1[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[0][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[1][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[2][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[3][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[4][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[5][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[6][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[7][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[8][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[9][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[10][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[11][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[12][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[13][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[14][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp1[15][15:0]
+addSignal -expanded -h 15 -holdScope temp2[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[0][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[1][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[2][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[3][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[4][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[5][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[6][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[7][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[8][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[9][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[10][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[11][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[12][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[13][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[14][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp2[15][15:0]
+addSignal -expanded -h 15 -holdScope temp3[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[0][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[1][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[2][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[3][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[4][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[5][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[6][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[7][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[8][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[9][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[10][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[11][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[12][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[13][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[14][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp3[15][15:0]
+addSignal -expanded -h 15 -holdScope temp4[0:15]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[0][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[1][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[2][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[3][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[4][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[5][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[6][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[7][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[8][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[9][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[10][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[11][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[12][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[13][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[14][15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope temp4[15][15:0]
+addGroup "G3"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+
