@@ -159,6 +159,8 @@ always_ff @(posedge clk) begin
             end
 
             1: begin
+	        ts1_cnt <=0;
+		ts2_cnt <=0;
                 if (piso_reg[63:48]==16'h4a4a)
                     ts1_cnt <= ts1_cnt + 1;
                 else
@@ -167,6 +169,8 @@ always_ff @(posedge clk) begin
             end
 
             2: begin
+	        ts1_cnt <=0;
+		ts2_cnt <=0;
                 if (piso_reg[63:48]==16'h4545)
                     ts2_cnt <= ts2_cnt + 1;
                 else

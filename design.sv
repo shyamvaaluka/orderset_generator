@@ -22,16 +22,22 @@ module ltssm(input clk,
   reg[31:0]ts2_rcvd_cnt[0:15];
   reg[31:0]ts_count[0:15];
 
-  orderset DUT(.clk(clk),
-               .rst(rst),
-               .ltssm_states_h(ltssm_states_h),
-	       .command(command),
-	       .pipe_tx_data(pipe_tx_data),
-	       .pipe_rx_data(pipe_rx_data),
-	       .ts1_cnt(ts1_sent_cnt),
-	       .ts2_cnt(ts2_sent_cnt),
-	       .cnt(ts_count)
-              );
+  genvar i;
+
+  generate
+    for(i=0;i<=15;i++)begin
+    orderset DUT(.clk(clk),
+                 .rst(rst),
+                 .ltssm_states_h(ltssm_states_h[i]),
+	         .command(command),
+	         .pipe_tx_data(pipe_tx_data[i]),
+	         .pipe_rx_data(pipe_rx_data[i]),
+	         .ts1_cnt(ts1_sent_cnt[i]),
+	         .ts2_cnt(ts2_sent_cnt[i]),
+	         .cnt(ts_count[i])
+                );
+    end
+  endgenerate
   
   
   always_ff@(posedge clk) begin
@@ -97,9 +103,13 @@ module ltssm(input clk,
   always@(*)begin
     case(state)
       
-      DETECT: begin
-        if(d_to == 100)//2ms
+      DETECT: begin 
+        if(d_to != 100 && ts1_rcvd_cnt == 5) begin//2ms
           next_state=POLLING_ACTIVE;
+	  command=0;
+	end
+	else if(d_to==100 && ts1_rcvd_cnt != 5)
+	  next_state=DETECT;
         else
           next_state=DETECT;
 	  ltssm_states_h=0;
@@ -108,7 +118,7 @@ module ltssm(input clk,
       POLLING_ACTIVE: begin
         if(pa_to != 200 && (ts1_sent_cnt == 12 && ts2_rcvd_cnt == 8))//24ms
           next_state=POLLING_CONFIG;
-	else if(pa_to == 200 || (ts1_sent_cnt != 12 || ts2_rcvd_cnt != 8))
+	else if(pa_to == 200 && (ts1_sent_cnt != 12 || ts2_rcvd_cnt != 8))
 	  next_state=DETECT;
 	else
           next_state=POLLING_ACTIVE;
@@ -147,9 +157,20 @@ module ltssm(input clk,
 
 
   always_ff@(posedge clk)begin
-     
-
-
+    if(rst) begin
+     ts1_rcvd_cnt<=0;
+     ts2_rcvd_cnt<=0;
+    end
+    else begin
+      if(pipe_rx_data[63:48] == 16'h4a4a)
+        ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
+      else if(pipe_rx_data[63:48] == 16'h4545)
+        ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+      else begin
+        ts1_rcvd_cnt<=0;
+	ts2_rcvd_cnt<=0;
+      end
+    end
   end
   
 endmodule
