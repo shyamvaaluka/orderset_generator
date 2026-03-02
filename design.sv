@@ -3,8 +3,6 @@
 module ltssm(input clk,
                    rst,
              input[15:0]pipe_rx_data[0:15],
-	     input[2:0]ltssm_states_h[0:15],
-	     input[31:0]command,
              output reg[15:0]pipe_tx_data[0:15]);
   localparam DETECT=0;
   localparam POLLING_ACTIVE=1;
@@ -21,6 +19,8 @@ module ltssm(input clk,
   reg[31:0]ts1_rcvd_cnt[0:15];
   reg[31:0]ts2_rcvd_cnt[0:15];
   reg[31:0]ts_count[0:15];
+  reg[2:0]ltssm_states_h[0:15];
+  reg[31:0]command;
 
   genvar i;
 
@@ -162,14 +162,66 @@ module ltssm(input clk,
      ts2_rcvd_cnt<=0;
     end
     else begin
-      if(pipe_rx_data[63:48] == 16'h4a4a)
-        ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
-      else if(pipe_rx_data[63:48] == 16'h4545)
-        ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
-      else begin
+      case(state)
+      
+      DETECT: begin
         ts1_rcvd_cnt<=0;
-	ts2_rcvd_cnt<=0;
+        ts2_rcvd_cnt<=0;
+        if(pipe_rx_data[63:48] == 16'h4a4a)
+          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
+        else if(pipe_rx_data[63:48] == 16'h4545)
+          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        else begin
+          ts1_rcvd_cnt<=0;
+          ts2_rcvd_cnt<=0;
+        end
       end
+
+      POLLING_ACTIVE: begin
+        ts1_rcvd_cnt<=0;
+        ts2_rcvd_cnt<=0;
+        if(pipe_rx_data[63:48] == 16'h4a4a)
+          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
+        else if(pipe_rx_data[63:48] == 16'h4545)
+          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        else begin
+          ts1_rcvd_cnt<=0;
+          ts2_rcvd_cnt<=0;
+        end
+      end
+
+      POLLING_CONFIG: begin
+        ts1_rcvd_cnt<=0;
+        ts2_rcvd_cnt<=0;
+        if(pipe_rx_data[63:48] == 16'h4a4a)
+          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
+        else if(pipe_rx_data[63:48] == 16'h4545)
+          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        else begin
+          ts1_rcvd_cnt<=0;
+          ts2_rcvd_cnt<=0;
+        end
+      end
+
+      CONFIGURATION: begin
+        ts1_rcvd_cnt<=0;
+        ts2_rcvd_cnt<=0;
+        if(pipe_rx_data[63:48] == 16'h4a4a)
+          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
+        else if(pipe_rx_data[63:48] == 16'h4545)
+          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        else begin
+          ts1_rcvd_cnt<=0;
+          ts2_rcvd_cnt<=0;
+        end
+      end
+
+      default: begin
+        ts1_rcvd_cnt<=0;
+        ts2_rcvd_cnt<=0; 
+      end
+
+      endcase
     end
   end
   
