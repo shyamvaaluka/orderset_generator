@@ -1,7 +1,7 @@
 `include "orderset.sv"
 `timescale 1ns/1ps
-module ltssm(input clk,
-                   rst,
+module ltssm_x(input clk,
+             input reset,
              input[15:0]pipe_rx_data[0:15],
              output reg[15:0]pipe_tx_data[0:15]);
   localparam DETECT=0;
@@ -22,33 +22,30 @@ module ltssm(input clk,
   reg[2:0]ltssm_states_h[0:15];
   reg[31:0]command;
 
-  genvar i;
+  int rcv_5_ts1, rcv_8_ts1, rcv_8_ts2;
+  int sent_12_ts1, sent_16_ts2;
 
-  generate
-    for(i=0;i<=15;i++)begin
+
     orderset DUT(.clk(clk),
-                 .rst(rst),
-                 .ltssm_states_h(ltssm_states_h[i]),
+                 .rst(reset),
+                 .ltssm_states_h(ltssm_states_h),
 	         .command(command),
-	         .pipe_tx_data(pipe_tx_data[i]),
-	         .pipe_rx_data(pipe_rx_data[i]),
-	         .ts1_cnt(ts1_sent_cnt[i]),
-	         .ts2_cnt(ts2_sent_cnt[i]),
-	         .cnt(ts_count[i])
+	         .pipe_tx_data(pipe_tx_data),
+	         .ts1_cnt(ts1_sent_cnt),
+	         .ts2_cnt(ts2_sent_cnt),
+	         .cnt(ts_count)
                 );
-    end
-  endgenerate
   
   
   always_ff@(posedge clk) begin
-    if(rst)
+    if(reset)
       state<=0;
     else
       state<=next_state;
   end
   
   always_ff@(posedge clk) begin
-    if(rst) begin
+    if(reset) begin
       d_to<=0;
       pa_to<=0;
       pc_to<=0;
@@ -104,37 +101,40 @@ module ltssm(input clk,
     case(state)
       
       DETECT: begin 
-        if(d_to != 100 && ts1_rcvd_cnt == 5) begin//2ms
+        if(d_to != 100 && /*ts1_rcvd_cnt[0] == 5*/rcv_5_ts1) begin//2ms
           next_state=POLLING_ACTIVE;
 	  command=0;
 	end
-	else if(d_to==100 && ts1_rcvd_cnt != 5)
+	else if(d_to==100 && /*ts1_rcvd_cnt[0] != 5*/!rcv_5_ts1)
 	  next_state=DETECT;
         else
           next_state=DETECT;
-	  ltssm_states_h=0;
+	  for(int i=0;i<=15;i++)
+	    ltssm_states_h[i]=0;
       end
       
       POLLING_ACTIVE: begin
-        if(pa_to != 200 && (ts1_sent_cnt == 12 && ts2_rcvd_cnt == 8))//24ms
+        if(pa_to != 200 && (/*ts1_sent_cnt[0] == 12*/sent_12_ts1 && /*ts1_rcvd_cnt[0] == 8*/rcv_8_ts1))//24ms
           next_state=POLLING_CONFIG;
-	else if(pa_to == 200 && (ts1_sent_cnt != 12 || ts2_rcvd_cnt != 8))
+	else if(pa_to == 200 && (/*ts1_sent_cnt[0] != 12*/!sent_12_ts1 || /*ts1_rcvd_cnt[0] != 8*/!rcv_8_ts1))
 	  next_state=DETECT;
 	else
           next_state=POLLING_ACTIVE;
-	  ltssm_states_h=1;
+	  for(int i=0;i<=15;i++)
+	    ltssm_states_h[i]=1;
 	  command=0;
       end
       
       
        POLLING_CONFIG: begin
-         if(pc_to != 300 && (ts1_sent_cnt == 16 && ts2_rcvd_cnt == 8))//48ms
+         if(pc_to != 300 && (/*ts2_sent_cnt[0] == 16*/sent_16_ts2 && /*ts2_rcvd_cnt[0] == 8*/rcv_8_ts2))//48ms
            next_state=CONFIGURATION;
-        else if(pc_to == 300 && (ts1_sent_cnt != 16 || ts2_rcvd_cnt != 8))
+        else if(pc_to == 300 && (/*ts2_sent_cnt[0] != 16*/!sent_16_ts2 || /*ts2_rcvd_cnt[0] != 8*/!rcv_8_ts2))
 	   next_state=DETECT;
         else
            next_state=POLLING_CONFIG;
-	   ltssm_states_h=2;
+	  for(int i=0;i<=15;i++)
+	   ltssm_states_h[i]=2;
 	   command=1;
       end
       
@@ -143,86 +143,182 @@ module ltssm(input clk,
            next_state= DETECT;
         else
            next_state=CONFIGURATION;
-	   ltssm_states_h=3;
+	  for(int i=0;i<=15;i++)
+	   ltssm_states_h[i]=3;
 	   command=2;
       end
       
       default: begin
                  next_state=DETECT;
-	         ltssm_states_h=0;
+	         for(int i=0;i<=15;i++)
+	         ltssm_states_h[i]=0;
 		 command=2;
 	       end
     endcase
   end
 
+  always@(*) begin
+    if(ts1_sent_cnt[0]==12)
+      sent_12_ts1 = 32'b1;
+    else if(ts2_sent_cnt[0]==16)
+      sent_16_ts2 = 32'b1;
+    else begin
+      case(state)
+        0: begin
+           if(next_state == 1)begin
+            sent_12_ts1 = 0;
+            sent_16_ts2 = 0;
+	   end
+	end
+        1: begin
+           if(next_state == 2)begin
+            sent_12_ts1 = 0;
+            sent_16_ts2 = 0;
+	   end
+	end
+        2: begin
+           if(next_state == 3)begin
+            sent_12_ts1 = 0;
+            sent_16_ts2 = 0;
+	   end
+	end
+        3: begin
+           if(next_state == 0)begin
+            sent_12_ts1 = 0;
+            sent_16_ts2 = 0;
+	   end
+	end
+	default :begin
+            sent_12_ts1 = 0;
+            sent_16_ts2 = 0;
+	end
+      endcase
+    end
+  end
+
+  always@(*) begin
+    if(ts1_rcvd_cnt[0]==5)
+      rcv_5_ts1 = 32'b1;
+    else if(ts1_rcvd_cnt[0] == 8)
+      rcv_8_ts1 = 32'b1;
+    else if(ts2_rcvd_cnt[0]==8)
+      rcv_8_ts2 = 32'b1;
+    else begin
+      case(state)
+        0: begin
+           if(next_state == 1)begin
+            rcv_5_ts1 = 0;
+            rcv_8_ts1 = 0;
+            rcv_8_ts2 = 0;
+	   end
+	end
+        1: begin
+           if(next_state == 2)begin
+            rcv_5_ts1 = 0;
+            rcv_8_ts1 = 0;
+            rcv_8_ts2 = 0;
+	   end
+	end
+        2: begin
+           if(next_state == 3)begin
+            rcv_5_ts1 = 0;
+            rcv_8_ts1 = 0;
+            rcv_8_ts2 = 0;
+	   end
+	end
+        3: begin
+           if(next_state == 0)begin
+            rcv_5_ts1 = 0;
+            rcv_8_ts1 = 0;
+            rcv_8_ts2 = 0;
+	   end
+	end
+	default :begin
+            rcv_5_ts1 = 0;
+            rcv_8_ts1 = 0;
+            rcv_8_ts2 = 0;
+	end
+     endcase
+    end
+
+  end
+
 
   always_ff@(posedge clk)begin
-    if(rst) begin
-     ts1_rcvd_cnt<=0;
-     ts2_rcvd_cnt<=0;
+    if(reset) begin
+     ts1_rcvd_cnt[0]<=0;
+     ts2_rcvd_cnt[0]<=0;
     end
     else begin
       case(state)
       
       DETECT: begin
-        ts1_rcvd_cnt<=0;
-        ts2_rcvd_cnt<=0;
-        if(pipe_rx_data[63:48] == 16'h4a4a)
-          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
-        else if(pipe_rx_data[63:48] == 16'h4545)
-          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
+	else if(next_state == 1)begin
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
         else begin
-          ts1_rcvd_cnt<=0;
-          ts2_rcvd_cnt<=0;
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
         end
       end
 
       POLLING_ACTIVE: begin
-        ts1_rcvd_cnt<=0;
-        ts2_rcvd_cnt<=0;
-        if(pipe_rx_data[63:48] == 16'h4a4a)
-          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
-        else if(pipe_rx_data[63:48] == 16'h4545)
-          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
+	else if(next_state == 2)begin
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
         else begin
-          ts1_rcvd_cnt<=0;
-          ts2_rcvd_cnt<=0;
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
         end
       end
 
       POLLING_CONFIG: begin
-        ts1_rcvd_cnt<=0;
-        ts2_rcvd_cnt<=0;
-        if(pipe_rx_data[63:48] == 16'h4a4a)
-          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
-        else if(pipe_rx_data[63:48] == 16'h4545)
-          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
+	else if(next_state == 3)begin
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
         else begin
-          ts1_rcvd_cnt<=0;
-          ts2_rcvd_cnt<=0;
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
         end
       end
 
       CONFIGURATION: begin
-        ts1_rcvd_cnt<=0;
-        ts2_rcvd_cnt<=0;
-        if(pipe_rx_data[63:48] == 16'h4a4a)
-          ts1_rcvd_cnt<=ts1_rcvd_cnt+1;
-        else if(pipe_rx_data[63:48] == 16'h4545)
-          ts2_rcvd_cnt<=ts2_rcvd_cnt+1;
+        if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
+	else if(next_state == 0)begin
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
         else begin
-          ts1_rcvd_cnt<=0;
-          ts2_rcvd_cnt<=0;
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
         end
       end
 
       default: begin
-        ts1_rcvd_cnt<=0;
-        ts2_rcvd_cnt<=0; 
+        ts1_rcvd_cnt[0]<=0;
+        ts2_rcvd_cnt[0]<=0;
       end
 
       endcase
     end
   end
-  
+
 endmodule

@@ -1,3 +1,3 @@
 fsdbDumpfile "dump3.fsdb"
-fsdbDumpvars 0 orderset_top.DUT +all
+fsdbDumpvars 0 ltssm_top.DUT +all
 run
