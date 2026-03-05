@@ -22,8 +22,8 @@ module ltssm_x(input clk,
   reg[2:0]ltssm_states_h[0:15];
   reg[31:0]command;
 
-  int rcv_5_ts1, rcv_8_ts1, rcv_8_ts2;
-  int sent_12_ts1, sent_16_ts2;
+  bit rcv_5_ts1, rcv_8_ts1, rcv_8_ts2;
+  bit sent_12_ts1, sent_16_ts2;
 
 
     orderset DUT(.clk(clk),
