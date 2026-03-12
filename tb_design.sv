@@ -161,7 +161,7 @@ always #5 clk=~clk;
       end
 
      begin
-       #100000000;
+       #500000;
      end
     join_any
     $finish;

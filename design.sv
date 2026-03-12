@@ -24,7 +24,7 @@ module ltssm_x(input clk,
 
   bit rcv_5_ts1, rcv_8_ts1, rcv_8_ts2;
   bit sent_12_ts1, sent_16_ts2;
-
+  int fd;
 
     orderset DUT(.clk(clk),
                  .rst(reset),
@@ -101,11 +101,11 @@ module ltssm_x(input clk,
     case(state)
       
       DETECT: begin 
-        if(d_to != 100 && /*ts1_rcvd_cnt[0] == 5*/rcv_5_ts1) begin//2ms
+        if(d_to != 100 && rcv_5_ts1) begin//2ms
           next_state=POLLING_ACTIVE;
 	  command=0;
 	end
-	else if(d_to==100 && /*ts1_rcvd_cnt[0] != 5*/!rcv_5_ts1)
+	else if(d_to==100 && !rcv_5_ts1)
 	  next_state=DETECT;
         else
           next_state=DETECT;
@@ -114,9 +114,9 @@ module ltssm_x(input clk,
       end
       
       POLLING_ACTIVE: begin
-        if(pa_to != 200 && (/*ts1_sent_cnt[0] == 12*/sent_12_ts1 && /*ts1_rcvd_cnt[0] == 8*/rcv_8_ts1))//24ms
+        if(pa_to != 200 && (sent_12_ts1 && rcv_8_ts1))//24ms
           next_state=POLLING_CONFIG;
-	else if(pa_to == 200 && (/*ts1_sent_cnt[0] != 12*/!sent_12_ts1 || /*ts1_rcvd_cnt[0] != 8*/!rcv_8_ts1))
+	else if(pa_to == 200 && (!sent_12_ts1 || !rcv_8_ts1))
 	  next_state=DETECT;
 	else
           next_state=POLLING_ACTIVE;
@@ -127,9 +127,9 @@ module ltssm_x(input clk,
       
       
        POLLING_CONFIG: begin
-         if(pc_to != 300 && (/*ts2_sent_cnt[0] == 16*/sent_16_ts2 && /*ts2_rcvd_cnt[0] == 8*/rcv_8_ts2))//48ms
+         if(pc_to != 300 && (sent_16_ts2 && rcv_8_ts2))//48ms
            next_state=CONFIGURATION;
-        else if(pc_to == 300 && (/*ts2_sent_cnt[0] != 16*/!sent_16_ts2 || /*ts2_rcvd_cnt[0] != 8*/!rcv_8_ts2))
+        else if(pc_to == 300 && (!sent_16_ts2 || !rcv_8_ts2))
 	   next_state=DETECT;
         else
            next_state=POLLING_CONFIG;
@@ -157,90 +157,98 @@ module ltssm_x(input clk,
     endcase
   end
 
-  always@(*) begin
+  always_ff@(posedge clk) begin
     if(ts1_sent_cnt[0]==12)
-      sent_12_ts1 = 32'b1;
+      sent_12_ts1 <= 32'b1;
     else if(ts2_sent_cnt[0]==16)
-      sent_16_ts2 = 32'b1;
+      sent_16_ts2 <= 32'b1;
     else begin
       case(state)
         0: begin
            if(next_state == 1)begin
-            sent_12_ts1 = 0;
-            sent_16_ts2 = 0;
+            sent_12_ts1 <= 0;
+            sent_16_ts2 <= 0;
 	   end
 	end
         1: begin
            if(next_state == 2)begin
-            sent_12_ts1 = 0;
-            sent_16_ts2 = 0;
+            sent_12_ts1 <= 0;
+            sent_16_ts2 <= 0;
 	   end
 	end
         2: begin
            if(next_state == 3)begin
-            sent_12_ts1 = 0;
-            sent_16_ts2 = 0;
+            sent_12_ts1 <= 0;
+            sent_16_ts2 <= 0;
 	   end
 	end
         3: begin
            if(next_state == 0)begin
-            sent_12_ts1 = 0;
-            sent_16_ts2 = 0;
+            sent_12_ts1 <= 0;
+            sent_16_ts2 <= 0;
 	   end
 	end
 	default :begin
-            sent_12_ts1 = 0;
-            sent_16_ts2 = 0;
+            sent_12_ts1 <= 0;
+            sent_16_ts2 <= 0;
 	end
       endcase
     end
   end
 
-  always@(*) begin
+  always_ff@(posedge clk) begin
     if(ts1_rcvd_cnt[0]==5)
-      rcv_5_ts1 = 32'b1;
+      rcv_5_ts1 <= 32'b1;
     else if(ts1_rcvd_cnt[0] == 8)
-      rcv_8_ts1 = 32'b1;
+      rcv_8_ts1 <= 32'b1;
     else if(ts2_rcvd_cnt[0]==8)
-      rcv_8_ts2 = 32'b1;
+      rcv_8_ts2 <= 32'b1;
     else begin
       case(state)
-        0: begin
+        DETECT: begin
+           $fdisplay(fd,$sformatf("entered detect state at %0t state:%0d",$time,state));
            if(next_state == 1)begin
-            rcv_5_ts1 = 0;
-            rcv_8_ts1 = 0;
-            rcv_8_ts2 = 0;
+            $fdisplay(fd,$sformatf("reset rcv_ts1 det->pol_act at %0t",$time));
+            rcv_5_ts1 <= 0;
+            rcv_8_ts1 <= 0;
+            rcv_8_ts2 <= 0;
 	   end
 	end
-        1: begin
+      POLLING_ACTIVE: begin
+           $fdisplay(fd,$sformatf("entered polling_active state at %0t state:%0d",$time,state));
            if(next_state == 2)begin
-            rcv_5_ts1 = 0;
-            rcv_8_ts1 = 0;
-            rcv_8_ts2 = 0;
+            $fdisplay(fd,$sformatf("reset rcv_ts1 pol_act->pol_cfg at %0t",$time));
+            rcv_5_ts1 <= 0;
+            rcv_8_ts1 <= 0;
+            rcv_8_ts2 <= 0;
 	   end
 	end
-        2: begin
+   POLLING_CONFIG: begin
+           $fdisplay(fd,$sformatf("entered polling_config state at %0t state:%0d",$time,state));
            if(next_state == 3)begin
-            rcv_5_ts1 = 0;
-            rcv_8_ts1 = 0;
-            rcv_8_ts2 = 0;
+            $fdisplay(fd,$sformatf("reset rcv_ts1 pol_cfg->config at %0t",$time));
+            rcv_5_ts1 <= 0;
+            rcv_8_ts1 <= 0;
+            rcv_8_ts2 <= 0;
 	   end
 	end
-        3: begin
+   CONFIGURATION: begin
+           $fdisplay(fd,$sformatf("entered configuration state at %0t state:%0d",$time,state));
            if(next_state == 0)begin
-            rcv_5_ts1 = 0;
-            rcv_8_ts1 = 0;
-            rcv_8_ts2 = 0;
+            $fdisplay(fd,$sformatf("reset rcv_ts1 config->det at %0t",$time));
+            rcv_5_ts1 <= 0;
+            rcv_8_ts1 <= 0;
+            rcv_8_ts2 <= 0;
 	   end
 	end
 	default :begin
-            rcv_5_ts1 = 0;
-            rcv_8_ts1 = 0;
-            rcv_8_ts2 = 0;
+            rcv_5_ts1 <= 0;
+            rcv_8_ts1 <= 0;
+            rcv_8_ts2 <= 0;
 	end
      endcase
     end
-
+    //$fclose(fd);
   end
 
 
@@ -319,6 +327,10 @@ module ltssm_x(input clk,
 
       endcase
     end
+  end
+
+  initial begin
+    fd=$fopen("debug.txt","w");
   end
 
 endmodule
