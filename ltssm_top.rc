@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 0.000000 3620739.657579
+zoom 0.000000 7140036.178200
 cursor 1535000.000000
 marker 0.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 0
+top 15
 ; marker line index
-markerPos 18
+markerPos 22
 
 ; event list
 ; addEvent event_name event_expression
@@ -60,15 +60,16 @@ addSignal -h 15 -UNSIGNED -HEX -holdScope command[31:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope d_to[31:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope pa_to[31:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope pc_to[31:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope rcv_5_ts1[31:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope rcv_8_ts2[31:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope rcv_8_ts1[31:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope state[1:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope next_state[1:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope sent_12_ts1[31:0]
-addSignal -h 15 -UNSIGNED -UDEC -holdScope sent_16_ts2[31:0]
 addSignal -h 15 -UNSIGNED -UDEC -holdScope ts1_sent_cnt[0][31:0]
 addGroup "G2"
+addSignal -h 15 /ltssm_top/DUT/rcv_5_ts1
+addSignal -h 15 -holdScope rcv_8_ts1
+addSignal -h 15 -holdScope rcv_8_ts2
+addSignal -h 15 -holdScope sent_12_ts1
+addSignal -h 15 -holdScope sent_16_ts2
+addGroup "G3"
 
 ; getSignalForm Scope Hierarchy Status
 ; active file of getSignalForm
