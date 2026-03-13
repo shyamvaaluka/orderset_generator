@@ -11,6 +11,7 @@ module piso (
     input  logic [15:0] i2,
     input  logic [15:0] i3,
     input  logic [2:0]ltssm_states_h,
+    input  logic [2:0]reset_send_cnt,
 
     // serial output
     output logic [15:0] out,
@@ -163,6 +164,10 @@ always_ff @(posedge clk) begin
 		ts2_cnt <=0;
                 if (piso_reg[63:48]==16'h4a4a)
                     ts1_cnt <= ts1_cnt + 1;
+	        else if(reset_send_cnt==2) begin
+		   ts1_cnt <= 0;
+		   ts2_cnt <= 0;
+		end
                 else
                     ts1_cnt <= ts1_cnt;  // hold
                 ts2_cnt <= ts2_cnt;      // hold
@@ -173,6 +178,10 @@ always_ff @(posedge clk) begin
 		ts2_cnt <=0;
                 if (piso_reg[63:48]==16'h4545)
                     ts2_cnt <= ts2_cnt + 1;
+	        else if(reset_send_cnt==3) begin
+		   ts1_cnt <= 0;
+		   ts2_cnt <= 0;
+		end
                 else
                     ts2_cnt <= ts2_cnt;   // hold
                 ts1_cnt <= ts1_cnt;       // hold

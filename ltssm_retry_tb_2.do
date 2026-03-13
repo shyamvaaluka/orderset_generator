@@ -4,10 +4,10 @@ add wave -noupdate /ltssm_top_2/DUT/clk
 add wave -noupdate /ltssm_top_2/DUT/reset
 add wave -noupdate {/ltssm_top_2/DUT/pipe_rx_data[0]}
 add wave -noupdate {/ltssm_top_2/DUT/pipe_tx_data[0]}
-add wave -noupdate /ltssm_top_2/DUT/d_to
-add wave -noupdate /ltssm_top_2/DUT/pa_to
-add wave -noupdate /ltssm_top_2/DUT/pc_to
-add wave -noupdate /ltssm_top_2/DUT/c_to
+add wave -noupdate -radix unsigned /ltssm_top_2/DUT/d_to
+add wave -noupdate -radix unsigned /ltssm_top_2/DUT/pa_to
+add wave -noupdate -radix unsigned /ltssm_top_2/DUT/pc_to
+add wave -noupdate -radix unsigned /ltssm_top_2/DUT/c_to
 add wave -noupdate /ltssm_top_2/DUT/state
 add wave -noupdate /ltssm_top_2/DUT/next_state
 add wave -noupdate -radix ascii /ltssm_top_2/DUT/state_ascii
@@ -28,10 +28,15 @@ add wave -noupdate -expand -group {tb side os count} -radix ascii /ltssm_top_2/s
 add wave -noupdate -expand -group {tb side os count} -radix unsigned /ltssm_top_2/flag_detect
 add wave -noupdate -expand -group {tb side os count} -radix unsigned /ltssm_top_2/flag_pol_active_send
 add wave -noupdate -expand -group {tb side os count} -radix unsigned /ltssm_top_2/flag_pol_active_receive
+add wave -noupdate /ltssm_top_2/flag_pol_config_send
+add wave -noupdate /ltssm_top_2/flag_pol_config_receive
+add wave -noupdate -radix unsigned /ltssm_top_2/c_to_tb
+add wave -noupdate -radix unsigned {/ltssm_top_2/DUT/reset_flag[0]}
+add wave -noupdate -radix hexadecimal {/ltssm_top_2/pipe_tx_data[0]}
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {56750 ps} 0}
+WaveRestoreCursors {{Cursor 1} {5260000 ps} 0}
 quietly wave cursor active 1
-configure wave -namecolwidth 150
+configure wave -namecolwidth 212
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 1
@@ -45,4 +50,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {1868354 ps} {2049034 ps}
+WaveRestoreZoom {5210269 ps} {5384060 ps}

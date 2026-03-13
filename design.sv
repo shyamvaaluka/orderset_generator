@@ -20,6 +20,7 @@ module ltssm_x(input clk,
   reg[31:0]ts2_rcvd_cnt[0:15];
   reg[31:0]ts_count[0:15];
   reg[2:0]ltssm_states_h[0:15];
+  reg[2:0]reset_flag[0:15];
   reg[31:0]command;
 
   bit rcv_5_ts1, rcv_8_ts1, rcv_8_ts2;
@@ -33,7 +34,8 @@ module ltssm_x(input clk,
 	         .pipe_tx_data(pipe_tx_data),
 	         .ts1_cnt(ts1_sent_cnt),
 	         .ts2_cnt(ts2_sent_cnt),
-	         .cnt(ts_count)
+	         .cnt(ts_count),
+                 .cnt_reset(reset_flag)
                 );
   
   
@@ -103,23 +105,40 @@ module ltssm_x(input clk,
       DETECT: begin 
         if(d_to != 100 && rcv_5_ts1) begin//2ms
           next_state=POLLING_ACTIVE;
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=1;
 	  command=0;
 	end
-	else if(d_to==100 && !rcv_5_ts1)
+	else if(d_to==100 && !rcv_5_ts1) begin
 	  next_state=DETECT;
-        else
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=0;
+	end
+	else begin
           next_state=DETECT;
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=0;
+	end
 	  for(int i=0;i<=15;i++)
 	    ltssm_states_h[i]=0;
       end
       
       POLLING_ACTIVE: begin
-        if(pa_to != 200 && (sent_12_ts1 && rcv_8_ts1))//24ms
+	if(pa_to != 200 && (sent_12_ts1 && rcv_8_ts1)) begin//24ms
           next_state=POLLING_CONFIG;
-	else if(pa_to == 200 && (!sent_12_ts1 || !rcv_8_ts1))
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=2;
+	end
+	else if(pa_to == 200 && (!sent_12_ts1 || !rcv_8_ts1)) begin
 	  next_state=DETECT;
-	else
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=0;
+	end
+	else begin
           next_state=POLLING_ACTIVE;
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=1;
+	end
 	  for(int i=0;i<=15;i++)
 	    ltssm_states_h[i]=1;
 	  command=0;
@@ -127,22 +146,37 @@ module ltssm_x(input clk,
       
       
        POLLING_CONFIG: begin
-         if(pc_to != 300 && (sent_16_ts2 && rcv_8_ts2))//48ms
+	if(pc_to != 300 && (sent_16_ts2 && rcv_8_ts2)) begin//48ms
            next_state=CONFIGURATION;
-        else if(pc_to == 300 && (!sent_16_ts2 || !rcv_8_ts2))
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=3;
+	end
+	else if(pc_to == 300 && (!sent_16_ts2 || !rcv_8_ts2)) begin
 	   next_state=DETECT;
-        else
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=0;
+	end
+	else begin
            next_state=POLLING_CONFIG;
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=2;
+	end
 	  for(int i=0;i<=15;i++)
 	   ltssm_states_h[i]=2;
 	   command=1;
       end
       
        CONFIGURATION: begin
-         if(c_to == 200)//24ms
+	if(c_to == 200) begin//24ms
            next_state= DETECT;
-        else
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=0;
+        end
+	else begin
            next_state=CONFIGURATION;
+	  for(int i=0;i<=15;i++)
+            reset_flag[i]=3;
+	end
 	  for(int i=0;i<=15;i++)
 	   ltssm_states_h[i]=3;
 	   command=2;
@@ -158,10 +192,12 @@ module ltssm_x(input clk,
   end
 
   always_ff@(posedge clk) begin
-    if(ts1_sent_cnt[0]==12)
+    if(ts1_sent_cnt[0]==12)begin
       sent_12_ts1 <= 32'b1;
-    else if(ts2_sent_cnt[0]==16)
+    end
+    else if(ts2_sent_cnt[0]==16) begin
       sent_16_ts2 <= 32'b1;
+    end
     else begin
       case(state)
         0: begin
@@ -284,7 +320,6 @@ module ltssm_x(input clk,
         else if(pipe_rx_data[0] == 16'h4545)
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
 	else if(next_state == 2)begin
-          #2;
           $fdisplay(fd2,$sformatf("ts1_rcv_count reset for pol_act->pol_cfg at time:%0t",$time));
           ts1_rcvd_cnt[0]<=0;
           ts2_rcvd_cnt[0]<=0;
@@ -297,12 +332,14 @@ module ltssm_x(input clk,
 
       POLLING_CONFIG: begin
           $fdisplay(fd2,$sformatf("entered pol_config state:%0d at time:%0t",state,$time));
-        if(pipe_rx_data[0] == 16'h4a4a)
+	if(pipe_rx_data[0] == 16'h4a4a) begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
-        else if(pipe_rx_data[0] == 16'h4545)
+        end
+	else if(pipe_rx_data[0] == 16'h4545) begin
+          $fdisplay(fd2,$sformatf("entered pol_config 2nd if at time:%0t",$time));
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
+	end
 	else if(next_state == 3)begin
-	  #2;
           $fdisplay(fd2,$sformatf("ts1_rcv_count reset for pol_cfg->config at time:%0t",$time));
           ts1_rcvd_cnt[0]<=0;
           ts2_rcvd_cnt[0]<=0;
@@ -315,12 +352,13 @@ module ltssm_x(input clk,
 
       CONFIGURATION: begin
           $fdisplay(fd2,$sformatf("entered configuration state:%0d at time:%0t",state,$time));
-        if(pipe_rx_data[0] == 16'h4a4a)
+	if(pipe_rx_data[0] == 16'h4a4a) begin
+          $fdisplay(fd2,$sformatf("entered configuration 1st if ts1 os check at time:%0t",$time));
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+	end
         else if(pipe_rx_data[0] == 16'h4545)
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
 	else if(next_state == 0)begin
-          #2;
           $fdisplay(fd2,$sformatf("ts1_rcv_count reset for config->detect at time:%0t",$time));
           ts1_rcvd_cnt[0]<=0;
           ts2_rcvd_cnt[0]<=0;

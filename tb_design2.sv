@@ -5,6 +5,8 @@ module ltssm_top_2;
  reg reset;
  reg[15:0]pipe_rx_data[0:15];
  logic[15:0]pipe_tx_data[0:15];
+ event ev;
+ int c_to_tb;
 
  bit[15:0]ts1_send_cnt[0:15];
  bit[15:0]ts2_send_cnt[0:15];
@@ -76,7 +78,17 @@ always #5 clk=~clk;
 	    ts2_send_cnt[0]++;
             send_ts2();
 	  end
+	  else if(state_ascii_tb=="CONFIGURATION") begin
+            c_to_tb++;
+	    if(c_to_tb == 200) begin
+	      state_ascii_tb="DETECT";
+	      c_to_tb=0;
+	      ts1_send_cnt[0]=0;
+	      ts2_send_cnt[0]=0;
+	    end
+	  end
         end
+	$display("Thread-0 completed at time:%0t",$time);
       end//outer thread-0 end
 
       begin//outer thread-1 begin
@@ -116,6 +128,8 @@ always #5 clk=~clk;
 	  if(flag_pol_config_send==1)
            break;
 	end
+	#5000;
+	$display("Thread-1 completed at time:%0t",$time);
       end//outer thread-1 end
 
       begin//outer thread-2 begin
@@ -148,6 +162,8 @@ always #5 clk=~clk;
 	  if(flag_pol_config_receive==1)
            break;
         end
+	wait(ev.triggered);
+	$display("Thread-2 completed at time:%0t",$time);
       end//outer thread-2 end
 
       
@@ -169,8 +185,13 @@ always #5 clk=~clk;
             state_ascii_tb="CONFIGURATION";
 	    flag_pol_config_send=0;
 	    flag_pol_config_receive=0;
+	    repeat(60) begin
+	      send_ts1();
+	    end
 	  end
+	  ->ev;
 	end
+	$display("Thread-3 completed at time:%0t",$time);
       end//outer thread-3 end
 
 

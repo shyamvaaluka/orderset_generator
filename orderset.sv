@@ -4,6 +4,7 @@
 module orderset(input clk,
                 input rst,
 		input[2:0]ltssm_states_h[0:15],
+		input[2:0]cnt_reset[0:15],
 	        input[31:0]command,
 		output reg[15:0]pipe_tx_data[0:15],
 		output reg[31:0]cnt[0:15],
@@ -46,7 +47,8 @@ module orderset(input clk,
 	       .cnt(cnt[i]),
 	       .ts1_count(ts1_cnt[i]),
 	       .ts2_count(ts2_cnt[i]),
-	       .ltssm_states_h(ltssm_states_h[i])
+	       .ltssm_states_h(ltssm_states_h[i]),
+	       .reset_send_cnt(cnt_reset[i])
                 ); 
 
     end
