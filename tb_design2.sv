@@ -68,8 +68,9 @@ always #5 clk=~clk;
     #5;
     fork
       begin//outer thread-0 begin
+        @(negedge clk);
 	forever begin
-          @(negedge clk);
+          //@(negedge clk);
 	  if(state_ascii_tb=="DETECT" || state_ascii_tb=="POL_ACTIVE") begin
 	    ts1_send_cnt[0]++;
             send_ts1();
@@ -128,7 +129,7 @@ always #5 clk=~clk;
 	  if(flag_pol_config_send==1)
            break;
 	end
-	#5000;
+	#9000;
 	$display("Thread-1 completed at time:%0t",$time);
       end//outer thread-1 end
 
@@ -180,15 +181,14 @@ always #5 clk=~clk;
 	    flag_pol_active_send=0;
 	    flag_pol_active_receive=0;
 	  end
-	  else if(flag_pol_config_send && flag_pol_config_receive) begin
+	  /*else if(flag_pol_config_send && flag_pol_config_receive) begin
             @(negedge clk);
             state_ascii_tb="CONFIGURATION";
 	    flag_pol_config_send=0;
 	    flag_pol_config_receive=0;
-	    repeat(60) begin
-	      send_ts1();
-	    end
-	  end
+	  end*/
+	  repeat(20)
+	  @(negedge clk);
 	  ->ev;
 	end
 	$display("Thread-3 completed at time:%0t",$time);
