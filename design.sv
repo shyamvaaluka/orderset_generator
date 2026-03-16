@@ -298,15 +298,15 @@ module ltssm_x(input clk,
       
       DETECT: begin
           $fdisplay(fd2,$sformatf("entered detect state:%0d at time:%0t",state,$time));
-        if(pipe_rx_data[0] == 16'h4a4a)
-          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
-        else if(pipe_rx_data[0] == 16'h4545)
-          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
-	else if(next_state == 1)begin
+	if(next_state == 1)begin
           $fdisplay(fd2,$sformatf("ts1_rcv_count reset for det->pol_act at time:%0t",$time));
           ts1_rcvd_cnt[0]<=0;
           ts2_rcvd_cnt[0]<=0;
 	end
+        else if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
         else begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
@@ -315,15 +315,15 @@ module ltssm_x(input clk,
 
       POLLING_ACTIVE: begin
           $fdisplay(fd2,$sformatf("entered pol_active state:%0d at time:%0t",state,$time));
-        if(pipe_rx_data[0] == 16'h4a4a)
-          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
-        else if(pipe_rx_data[0] == 16'h4545)
-          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
-	else if(next_state == 2)begin
+	if(next_state == 2)begin
           $fdisplay(fd2,$sformatf("ts1_rcv_count reset for pol_act->pol_cfg at time:%0t",$time));
           ts1_rcvd_cnt[0]<=0;
           ts2_rcvd_cnt[0]<=0;
 	end
+        else if(pipe_rx_data[0] == 16'h4a4a)
+          ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
+        else if(pipe_rx_data[0] == 16'h4545)
+          ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
         else begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];
@@ -332,17 +332,17 @@ module ltssm_x(input clk,
 
       POLLING_CONFIG: begin
           $fdisplay(fd2,$sformatf("entered pol_config state:%0d at time:%0t",state,$time));
-	if(pipe_rx_data[0] == 16'h4a4a) begin
+	if(next_state == 3)begin
+          $fdisplay(fd2,$sformatf("ts1_rcv_count reset for pol_cfg->config at time:%0t",$time));
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
+	else if(pipe_rx_data[0] == 16'h4a4a) begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
         end
 	else if(pipe_rx_data[0] == 16'h4545) begin
           $fdisplay(fd2,$sformatf("entered pol_config 2nd if at time:%0t",$time));
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
-	end
-	else if(next_state == 3)begin
-          $fdisplay(fd2,$sformatf("ts1_rcv_count reset for pol_cfg->config at time:%0t",$time));
-          ts1_rcvd_cnt[0]<=0;
-          ts2_rcvd_cnt[0]<=0;
 	end
         else begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
@@ -352,17 +352,17 @@ module ltssm_x(input clk,
 
       CONFIGURATION: begin
           $fdisplay(fd2,$sformatf("entered configuration state:%0d at time:%0t",state,$time));
-	if(pipe_rx_data[0] == 16'h4a4a) begin
+	if(next_state == 0)begin
+          $fdisplay(fd2,$sformatf("ts1_rcv_count reset for config->detect at time:%0t",$time));
+          ts1_rcvd_cnt[0]<=0;
+          ts2_rcvd_cnt[0]<=0;
+	end
+	else if(pipe_rx_data[0] == 16'h4a4a) begin
           $fdisplay(fd2,$sformatf("entered configuration 1st if ts1 os check at time:%0t",$time));
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0]+1;
 	end
         else if(pipe_rx_data[0] == 16'h4545)
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0]+1;
-	else if(next_state == 0)begin
-          $fdisplay(fd2,$sformatf("ts1_rcv_count reset for config->detect at time:%0t",$time));
-          ts1_rcvd_cnt[0]<=0;
-          ts2_rcvd_cnt[0]<=0;
-	end
         else begin
           ts1_rcvd_cnt[0]<=ts1_rcvd_cnt[0];
           ts2_rcvd_cnt[0]<=ts2_rcvd_cnt[0];

@@ -24,6 +24,7 @@ add wave -noupdate -expand -group {tb side os} -radix unsigned {/ltssm_top_2/ts1
 add wave -noupdate -expand -group {tb side os} -radix unsigned {/ltssm_top_2/ts2_send_cnt[0]}
 add wave -noupdate -expand -group {tb side os} -radix unsigned {/ltssm_top_2/ts1_rcv_cnt[0]}
 add wave -noupdate -expand -group {tb side os} -radix unsigned {/ltssm_top_2/ts2_rcv_cnt[0]}
+add wave -noupdate -expand -group {tb side os} -radix ascii /ltssm_top_2/DUT/state_ascii
 add wave -noupdate -expand -group {tb side os} -radix ascii /ltssm_top_2/state_ascii_tb
 add wave -noupdate -expand -group {tb side os} -radix unsigned /ltssm_top_2/flag_detect
 add wave -noupdate -expand -group {tb side os} -radix unsigned /ltssm_top_2/flag_pol_active_send
@@ -35,7 +36,7 @@ add wave -noupdate -expand -group {tb side os} -radix unsigned {/ltssm_top_2/DUT
 add wave -noupdate -expand -group {tb side os} -radix hexadecimal {/ltssm_top_2/pipe_tx_data[0]}
 add wave -noupdate -expand -group {tb side os} {/ltssm_top_2/pipe_rx_data[0]}
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1919827 ps} 0}
+WaveRestoreCursors {{Cursor 1} {5175000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 212
 configure wave -valuecolwidth 100
@@ -51,4 +52,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {1877754 ps} {2051545 ps}
+WaveRestoreZoom {289339 ps} {2340139 ps}

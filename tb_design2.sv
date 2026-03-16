@@ -70,39 +70,9 @@ always #5 clk=~clk;
     reset=0;
     #5;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    fork
-      begin
-        forever begin
-          @(negedge clk);
-          state_ascii_tb="DETECT";
-          if(ts1_send_cnt[0]==5) begin
-            @(negedge clk);		  
-            ts1_send_cnt[0]=0;
-            flag_detect=1;
-          end
-          if(flag_detect==1)
-            break;
-        end
-      end
-
-      begin
-        forever begin
-          @(negedge clk);
-          if(state_ascii_tb == "DETECT") begin
-            ts1_send_cnt[0]++;
-            send_ts1();
-          end
-        end
-      end
-    join_any
-    disable fork;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   fork
     begin	  
-      repeat(3) begin
+      forever begin
         fork	    
           begin//Timeout thread for states in tb begin
             forever begin
@@ -140,8 +110,19 @@ always #5 clk=~clk;
           begin//outer thread-1 begin
             forever begin
               @(negedge clk);
+              state_ascii_tb="DETECT";
+              if(ts1_send_cnt[0]==5) begin
+                @(negedge clk);		  
+                ts1_send_cnt[0]=0;
+                flag_detect=1;
+              end
+              if(flag_detect==1)
+                break;
+            end
+            forever begin
+              @(negedge clk);
               wait(state_ascii_tb=="POL_ACTIVE");
-              if(ts1_send_cnt[0]==8) begin
+              if(ts1_send_cnt[0]==16) begin
                 @(negedge clk);
                 ts1_send_cnt[0]=0;
                 flag_pol_active_send=1;
@@ -154,7 +135,7 @@ always #5 clk=~clk;
             forever begin
               @(negedge clk);
               wait(state_ascii_tb=="POL_CONFIG");
-              if(ts2_send_cnt[0]==8) begin
+              if(ts2_send_cnt[0]==16) begin
                 @(negedge clk);
                 ts2_send_cnt[0]=0;
                 flag_pol_config_send=1;
@@ -173,7 +154,7 @@ always #5 clk=~clk;
               if(pipe_rx_data[0]==16'h4a4a) begin
                 ts1_rcv_cnt[0]++;
               end
-              if(ts1_rcv_cnt[0]==12) begin
+              if(ts1_rcv_cnt[0]==8) begin
                 @(negedge clk);
                 ts1_rcv_cnt[0]=0;
                 flag_pol_active_receive=1;
@@ -188,7 +169,7 @@ always #5 clk=~clk;
               if(pipe_rx_data[0]==16'h4545) begin
                 ts2_rcv_cnt[0]++;
               end
-              if(ts2_rcv_cnt[0]==16) begin
+              if(ts2_rcv_cnt[0]==8) begin
                 @(negedge clk);
                 ts2_rcv_cnt[0]=0;
                 flag_pol_config_receive=1;
@@ -240,7 +221,7 @@ always #5 clk=~clk;
     end
 
     begin
-      #2000000;
+      #50000;
       $display("Completed overall timeout at time:%0t",$time);
     end
  join_any 
