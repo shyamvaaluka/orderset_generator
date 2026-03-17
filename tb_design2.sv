@@ -16,6 +16,10 @@ module ltssm_top_2;
  bit flag_detect,flag_pol_active_send,flag_pol_active_receive,flag_pol_config_send,flag_pol_config_receive;
  int fd_3;
  int l;
+ int tracker_pl;
+
+ string tx_sym0[16],tx_sym1[16],tx_sym2[16],tx_sym3[16],tx_sym4[16],tx_sym5[16],tx_sym6[16],tx_sym7[16];
+ string rx_sym0[16],rx_sym1[16],rx_sym2[16],rx_sym3[16],rx_sym4[16],rx_sym5[16],rx_sym6[16],rx_sym7[16];
 
  ltssm_x DUT(.clk(clk),
            .reset(reset),
@@ -25,7 +29,7 @@ module ltssm_top_2;
 always #5 clk=~clk;
 
   task send_ts1;
-    //@(negedge clk);
+    @(negedge clk);
     for(int i=0;i<=15;i++)begin
      pipe_tx_data[i]=16'h4a4a;
     end
@@ -45,7 +49,7 @@ always #5 clk=~clk;
   endtask
 
   task send_ts2;
-    //@(negedge clk);
+    @(negedge clk);
     for(int i=0;i<=15;i++)begin
      pipe_tx_data[i]=16'h4545;
     end
@@ -55,7 +59,7 @@ always #5 clk=~clk;
     end
     @(negedge clk);
     for(int i=0;i<=15;i++)begin
-     pipe_tx_data[i]=16'h4ec7;
+     pipe_tx_data[i]=16'h4ef7;
     end
     @(negedge clk);
     for(int i=0;i<=15;i++)begin
@@ -64,7 +68,9 @@ always #5 clk=~clk;
   endtask
 
   initial begin
-    fd_3=$fopen("state_trans.txt","w");	  
+    fd_3=$fopen("state_trans.txt","w");
+    tracker_pl=$fopen("tracker_pl","w");    
+    $fdisplay(tracker_pl,"-----------------------------TX-----------------------------------------------------------------RX------------------------------");
     reset=1;
     @(negedge clk);
     reset=0;
@@ -212,6 +218,212 @@ always #5 clk=~clk;
               $display("Thread-3 completed at time:%0t",$time);
             end//outer thread-3 end
 
+            begin//Tracker thread 1 begin
+		repeat(4)
+		  @(posedge clk);
+		  @(posedge clk);
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                 ",$time,tx_sym0[0],tx_sym0[1],tx_sym0[2],tx_sym0[3],tx_sym0[4],tx_sym0[5],tx_sym0[6],tx_sym0[7],tx_sym0[8],tx_sym0[9],tx_sym0[10],tx_sym0[11],tx_sym0[12],tx_sym0[13],tx_sym0[14],tx_sym0[15],rx_sym0[0],rx_sym0[1],rx_sym0[2],rx_sym0[3],rx_sym0[4],rx_sym0[5],rx_sym0[6],rx_sym0[7],rx_sym0[8],rx_sym0[9],rx_sym0[10],rx_sym0[11],rx_sym0[12],rx_sym0[13],rx_sym0[14],rx_sym0[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym1[0],tx_sym1[1],tx_sym1[2],tx_sym1[3],tx_sym1[4],tx_sym1[5],tx_sym1[6],tx_sym1[7],tx_sym1[8],tx_sym1[9],tx_sym1[10],tx_sym1[11],tx_sym1[12],tx_sym1[13],tx_sym1[14],tx_sym1[15],rx_sym1[0],rx_sym1[1],rx_sym1[2],rx_sym1[3],rx_sym1[4],rx_sym1[5],rx_sym1[6],rx_sym1[7],rx_sym1[8],rx_sym1[9],rx_sym1[10],rx_sym1[11],rx_sym1[12],rx_sym1[13],rx_sym1[14],rx_sym1[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym2[0],tx_sym2[1],tx_sym2[2],tx_sym2[3],tx_sym2[4],tx_sym2[5],tx_sym2[6],tx_sym2[7],tx_sym2[8],tx_sym2[9],tx_sym2[10],tx_sym2[11],tx_sym2[12],tx_sym2[13],tx_sym2[14],tx_sym2[15],rx_sym2[0],rx_sym2[1],rx_sym2[2],rx_sym2[3],rx_sym2[4],rx_sym2[5],rx_sym2[6],rx_sym2[7],rx_sym2[8],rx_sym2[9],rx_sym2[10],rx_sym2[11],rx_sym2[12],rx_sym2[13],rx_sym2[14],rx_sym2[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym3[0],tx_sym3[1],tx_sym3[2],tx_sym3[3],tx_sym3[4],tx_sym3[5],tx_sym3[6],tx_sym3[7],tx_sym3[8],tx_sym3[9],tx_sym3[10],tx_sym3[11],tx_sym3[12],tx_sym3[13],tx_sym3[14],tx_sym3[15],rx_sym3[0],rx_sym3[1],rx_sym3[2],rx_sym3[3],rx_sym3[4],rx_sym3[5],rx_sym3[6],rx_sym3[7],rx_sym3[8],rx_sym3[9],rx_sym3[10],rx_sym3[11],rx_sym3[12],rx_sym3[13],rx_sym3[14],rx_sym3[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym4[0],tx_sym4[1],tx_sym4[2],tx_sym4[3],tx_sym4[4],tx_sym4[5],tx_sym4[6],tx_sym4[7],tx_sym4[8],tx_sym4[9],tx_sym4[10],tx_sym4[11],tx_sym4[12],tx_sym4[13],tx_sym4[14],tx_sym4[15],rx_sym4[0],rx_sym4[1],rx_sym4[2],rx_sym4[3],rx_sym4[4],rx_sym4[5],rx_sym4[6],rx_sym4[7],rx_sym4[8],rx_sym4[9],rx_sym4[10],rx_sym4[11],rx_sym4[12],rx_sym4[13],rx_sym4[14],rx_sym4[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym5[0],tx_sym5[1],tx_sym5[2],tx_sym5[3],tx_sym5[4],tx_sym5[5],tx_sym5[6],tx_sym5[7],tx_sym5[8],tx_sym5[9],tx_sym5[10],tx_sym5[11],tx_sym5[12],tx_sym5[13],tx_sym5[14],tx_sym5[15],rx_sym5[0],rx_sym5[1],rx_sym5[2],rx_sym5[3],rx_sym5[4],rx_sym5[5],rx_sym5[6],rx_sym5[7],rx_sym5[8],rx_sym5[9],rx_sym5[10],rx_sym5[11],rx_sym5[12],rx_sym5[13],rx_sym5[14],rx_sym5[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym6[0],tx_sym6[1],tx_sym6[2],tx_sym6[3],tx_sym6[4],tx_sym6[5],tx_sym6[6],tx_sym6[7],tx_sym6[8],tx_sym6[9],tx_sym6[10],tx_sym6[11],tx_sym6[12],tx_sym6[13],tx_sym6[14],tx_sym6[15],rx_sym6[0],rx_sym6[1],rx_sym6[2],rx_sym6[3],rx_sym6[4],rx_sym6[5],rx_sym6[6],rx_sym6[7],rx_sym6[8],rx_sym6[9],rx_sym6[10],rx_sym6[11],rx_sym6[12],rx_sym6[13],rx_sym6[14],rx_sym6[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym7[0],tx_sym7[1],tx_sym7[2],tx_sym7[3],tx_sym7[4],tx_sym7[5],tx_sym7[6],tx_sym7[7],tx_sym7[8],tx_sym7[9],tx_sym7[10],tx_sym7[11],tx_sym7[12],tx_sym7[13],tx_sym7[14],tx_sym7[15],rx_sym7[0],rx_sym7[1],rx_sym7[2],rx_sym7[3],rx_sym7[4],rx_sym7[5],rx_sym7[6],rx_sym7[7],rx_sym7[8],rx_sym7[9],rx_sym7[10],rx_sym7[11],rx_sym7[12],rx_sym7[13],rx_sym7[14],rx_sym7[15]));
+
+              forever begin
+		repeat(3)      
+		@(posedge clk);
+		  @(posedge clk);
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                 ",$time,tx_sym0[0],tx_sym0[1],tx_sym0[2],tx_sym0[3],tx_sym0[4],tx_sym0[5],tx_sym0[6],tx_sym0[7],tx_sym0[8],tx_sym0[9],tx_sym0[10],tx_sym0[11],tx_sym0[12],tx_sym0[13],tx_sym0[14],tx_sym0[15],rx_sym0[0],rx_sym0[1],rx_sym0[2],rx_sym0[3],rx_sym0[4],rx_sym0[5],rx_sym0[6],rx_sym0[7],rx_sym0[8],rx_sym0[9],rx_sym0[10],rx_sym0[11],rx_sym0[12],rx_sym0[13],rx_sym0[14],rx_sym0[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym1[0],tx_sym1[1],tx_sym1[2],tx_sym1[3],tx_sym1[4],tx_sym1[5],tx_sym1[6],tx_sym1[7],tx_sym1[8],tx_sym1[9],tx_sym1[10],tx_sym1[11],tx_sym1[12],tx_sym1[13],tx_sym1[14],tx_sym1[15],rx_sym1[0],rx_sym1[1],rx_sym1[2],rx_sym1[3],rx_sym1[4],rx_sym1[5],rx_sym1[6],rx_sym1[7],rx_sym1[8],rx_sym1[9],rx_sym1[10],rx_sym1[11],rx_sym1[12],rx_sym1[13],rx_sym1[14],rx_sym1[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym2[0],tx_sym2[1],tx_sym2[2],tx_sym2[3],tx_sym2[4],tx_sym2[5],tx_sym2[6],tx_sym2[7],tx_sym2[8],tx_sym2[9],tx_sym2[10],tx_sym2[11],tx_sym2[12],tx_sym2[13],tx_sym2[14],tx_sym2[15],rx_sym2[0],rx_sym2[1],rx_sym2[2],rx_sym2[3],rx_sym2[4],rx_sym2[5],rx_sym2[6],rx_sym2[7],rx_sym2[8],rx_sym2[9],rx_sym2[10],rx_sym2[11],rx_sym2[12],rx_sym2[13],rx_sym2[14],rx_sym2[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym3[0],tx_sym3[1],tx_sym3[2],tx_sym3[3],tx_sym3[4],tx_sym3[5],tx_sym3[6],tx_sym3[7],tx_sym3[8],tx_sym3[9],tx_sym3[10],tx_sym3[11],tx_sym3[12],tx_sym3[13],tx_sym3[14],tx_sym3[15],rx_sym3[0],rx_sym3[1],rx_sym3[2],rx_sym3[3],rx_sym3[4],rx_sym3[5],rx_sym3[6],rx_sym3[7],rx_sym3[8],rx_sym3[9],rx_sym3[10],rx_sym3[11],rx_sym3[12],rx_sym3[13],rx_sym3[14],rx_sym3[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym4[0],tx_sym4[1],tx_sym4[2],tx_sym4[3],tx_sym4[4],tx_sym4[5],tx_sym4[6],tx_sym4[7],tx_sym4[8],tx_sym4[9],tx_sym4[10],tx_sym4[11],tx_sym4[12],tx_sym4[13],tx_sym4[14],tx_sym4[15],rx_sym4[0],rx_sym4[1],rx_sym4[2],rx_sym4[3],rx_sym4[4],rx_sym4[5],rx_sym4[6],rx_sym4[7],rx_sym4[8],rx_sym4[9],rx_sym4[10],rx_sym4[11],rx_sym4[12],rx_sym4[13],rx_sym4[14],rx_sym4[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym5[0],tx_sym5[1],tx_sym5[2],tx_sym5[3],tx_sym5[4],tx_sym5[5],tx_sym5[6],tx_sym5[7],tx_sym5[8],tx_sym5[9],tx_sym5[10],tx_sym5[11],tx_sym5[12],tx_sym5[13],tx_sym5[14],tx_sym5[15],rx_sym5[0],rx_sym5[1],rx_sym5[2],rx_sym5[3],rx_sym5[4],rx_sym5[5],rx_sym5[6],rx_sym5[7],rx_sym5[8],rx_sym5[9],rx_sym5[10],rx_sym5[11],rx_sym5[12],rx_sym5[13],rx_sym5[14],rx_sym5[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym6[0],tx_sym6[1],tx_sym6[2],tx_sym6[3],tx_sym6[4],tx_sym6[5],tx_sym6[6],tx_sym6[7],tx_sym6[8],tx_sym6[9],tx_sym6[10],tx_sym6[11],tx_sym6[12],tx_sym6[13],tx_sym6[14],tx_sym6[15],rx_sym6[0],rx_sym6[1],rx_sym6[2],rx_sym6[3],rx_sym6[4],rx_sym6[5],rx_sym6[6],rx_sym6[7],rx_sym6[8],rx_sym6[9],rx_sym6[10],rx_sym6[11],rx_sym6[12],rx_sym6[13],rx_sym6[14],rx_sym6[15]));
+		  $fdisplay(tracker_pl,$sformatf("%0t  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym7[0],tx_sym7[1],tx_sym7[2],tx_sym7[3],tx_sym7[4],tx_sym7[5],tx_sym7[6],tx_sym7[7],tx_sym7[8],tx_sym7[9],tx_sym7[10],tx_sym7[11],tx_sym7[12],tx_sym7[13],tx_sym7[14],tx_sym7[15],rx_sym7[0],rx_sym7[1],rx_sym7[2],rx_sym7[3],rx_sym7[4],rx_sym7[5],rx_sym7[6],rx_sym7[7],rx_sym7[8],rx_sym7[9],rx_sym7[10],rx_sym7[11],rx_sym7[12],rx_sym7[13],rx_sym7[14],rx_sym7[15]));
+	       //end
+              end
+            end//Tracker thread 1 end
+
+           begin
+	     forever begin
+	       @(posedge clk);	     
+	       if(pipe_tx_data[0]==16'h307e)
+	       $fdisplay(tracker_pl,"                                                                                                                                                                                 >TS1 %0t",$time);	
+	       if(pipe_tx_data[0]==16'h327e)
+	       $fdisplay(tracker_pl,"                                                                                                                                                                                 >TS2 %0t",$time);	
+	    end 
+           end
+           begin
+	     forever begin
+	       @(posedge clk);	     
+	       if(pipe_rx_data[0]==16'h307e)
+	       $fdisplay(tracker_pl,"                                                                                                                                                                                 <TS1 %0t",$time);	
+	       if(pipe_rx_data[0]==16'h327e)
+	       $fdisplay(tracker_pl,"                                                                                                                                                                                 <TS2 %0t",$time);	
+	    end 
+           end
+
+          begin
+            @(posedge clk);		  
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               ltssm in DETECT");	           
+            forever begin
+              @(posedge clk);
+	      if(flag_detect==1) 
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               ltssm in POLLING_ACTIVE");	           
+	      if(flag_pol_active_send && flag_pol_active_receive) 
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               ltssm in POLLING_CONFIG");	           
+	      if(flag_pol_config_send && flag_pol_config_receive) 
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               ltssm in CONFIGURATION");	           
+	      if(c_to_tb==200) begin 
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               timer expired direct to configuration state");	           
+	        $fdisplay(tracker_pl,"                                                                                                                                                                               ltssm in DETECT");	           
+             end
+	   end
+	  end
+            
+    
+	    begin
+              forever begin
+                @(posedge clk);
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h4a4a)begin
+                      tx_sym6[i]="4a";
+		      tx_sym7[i]="4a";
+		  end
+		 end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'hf7bc) begin
+                      tx_sym0[i]="COM";
+		      tx_sym1[i]="PAD";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h4ef7) begin
+                      tx_sym2[i]="PAD";
+		      tx_sym3[i]="4e";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h307e) begin
+                      tx_sym4[i]="7e";
+		      tx_sym5[i]="30";
+		  end
+		end
+              end
+	    end
+	    
+    
+            begin
+              forever begin
+                @(posedge clk);
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h4a4a)begin
+                      rx_sym6[i]="4a";
+		      rx_sym7[i]="4a";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'hf7bc) begin
+                      rx_sym0[i]="COM";
+		      rx_sym1[i]="PAD";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h4ef7) begin
+                      rx_sym2[i]="PAD";
+		      rx_sym3[i]="4e";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h307e) begin
+                      rx_sym4[i]="7e";
+		      rx_sym5[i]="30";
+		  end
+		end
+              end
+	    end
+
+           begin
+             forever begin
+               @(posedge clk);
+	       for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h0 && state_ascii_tb=="CONFIGURATION") begin
+                      rx_sym0[i]="";
+		      rx_sym1[i]="";
+                      rx_sym2[i]="";
+                      rx_sym3[i]="";
+                      rx_sym4[i]="";
+		      rx_sym5[i]="";
+		      rx_sym6[i]="";
+		      rx_sym7[i]="";
+		  end
+	     end
+	   end
+          end
+    
+            begin
+              forever begin
+                @(posedge clk);
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h4545)begin
+                      tx_sym6[i]="45";
+		      tx_sym7[i]="45";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'hf7bc) begin
+                      tx_sym0[i]="COM";
+		      tx_sym1[i]="PAD";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h4ef7) begin
+                      tx_sym2[i]="PAD";
+		      tx_sym3[i]="4e";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_tx_data[i]==16'h327e) begin
+                      tx_sym4[i]="7e";
+		      tx_sym5[i]="32";
+		  end
+		end
+              end
+	    end
+	    
+    
+            begin
+              forever begin
+                @(posedge clk);
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h4545)begin
+                      rx_sym6[i]="45";
+		      rx_sym7[i]="45";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'hf7bc) begin
+                      rx_sym0[i]="COM";
+		      rx_sym1[i]="PAD";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h4ef7) begin
+                      rx_sym2[i]="PAD";
+		      rx_sym3[i]="4e";
+		  end
+		end
+	          for(int i=0;i<=15;i++) begin		
+		    if(pipe_rx_data[i]==16'h327e) begin
+                      rx_sym4[i]="7e";
+		      rx_sym5[i]="32";
+		  end
+		end
+              end
+	    end
 
           join_any
           l++;
@@ -221,7 +433,7 @@ always #5 clk=~clk;
       end
 
       begin
-        #50000;
+        #100000;
         $display("Completed overall timeout at time:%0t",$time);
       end
     join_any 

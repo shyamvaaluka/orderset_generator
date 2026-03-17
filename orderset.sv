@@ -128,7 +128,7 @@ module orderset(input clk,
              temp1[i]=16'h4545;
              temp2[i]=16'hf7bc;
              temp3[i]=16'h4ef7;
-             temp4[i]=16'h307e;
+             temp4[i]=16'h327e;
 	    
 	   end
       end
