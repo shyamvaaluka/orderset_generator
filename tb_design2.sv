@@ -262,9 +262,9 @@ always #5 clk=~clk;
 		  $fdisplay(tracker_pl,$sformatf("%0tns  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s   |  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s  %0s                                                                 ",$time,tx_sym7[0],tx_sym7[1],tx_sym7[2],tx_sym7[3],tx_sym7[4],tx_sym7[5],tx_sym7[6],tx_sym7[7],tx_sym7[8],tx_sym7[9],tx_sym7[10],tx_sym7[11],tx_sym7[12],tx_sym7[13],tx_sym7[14],tx_sym7[15],rx_sym7[0],rx_sym7[1],rx_sym7[2],rx_sym7[3],rx_sym7[4],rx_sym7[5],rx_sym7[6],rx_sym7[7],rx_sym7[8],rx_sym7[9],rx_sym7[10],rx_sym7[11],rx_sym7[12],rx_sym7[13],rx_sym7[14],rx_sym7[15]));
 
               forever begin
-		repeat(3)      
+	        repeat(3)
+		  @(posedge clk);      
 		@(posedge clk);
-		  @(posedge clk);
 		  $fdisplay(tracker_pl,$sformatf("%0tns  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                 ",$time,tx_sym0[0],tx_sym0[1],tx_sym0[2],tx_sym0[3],tx_sym0[4],tx_sym0[5],tx_sym0[6],tx_sym0[7],tx_sym0[8],tx_sym0[9],tx_sym0[10],tx_sym0[11],tx_sym0[12],tx_sym0[13],tx_sym0[14],tx_sym0[15],rx_sym0[0],rx_sym0[1],rx_sym0[2],rx_sym0[3],rx_sym0[4],rx_sym0[5],rx_sym0[6],rx_sym0[7],rx_sym0[8],rx_sym0[9],rx_sym0[10],rx_sym0[11],rx_sym0[12],rx_sym0[13],rx_sym0[14],rx_sym0[15]));
 		  $fdisplay(tracker_pl,$sformatf("%0tns  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym1[0],tx_sym1[1],tx_sym1[2],tx_sym1[3],tx_sym1[4],tx_sym1[5],tx_sym1[6],tx_sym1[7],tx_sym1[8],tx_sym1[9],tx_sym1[10],tx_sym1[11],tx_sym1[12],tx_sym1[13],tx_sym1[14],tx_sym1[15],rx_sym1[0],rx_sym1[1],rx_sym1[2],rx_sym1[3],rx_sym1[4],rx_sym1[5],rx_sym1[6],rx_sym1[7],rx_sym1[8],rx_sym1[9],rx_sym1[10],rx_sym1[11],rx_sym1[12],rx_sym1[13],rx_sym1[14],rx_sym1[15]));
 		  $fdisplay(tracker_pl,$sformatf("%0tns  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s  |  %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s %0s                                                                ",$time,tx_sym2[0],tx_sym2[1],tx_sym2[2],tx_sym2[3],tx_sym2[4],tx_sym2[5],tx_sym2[6],tx_sym2[7],tx_sym2[8],tx_sym2[9],tx_sym2[10],tx_sym2[11],tx_sym2[12],tx_sym2[13],tx_sym2[14],tx_sym2[15],rx_sym2[0],rx_sym2[1],rx_sym2[2],rx_sym2[3],rx_sym2[4],rx_sym2[5],rx_sym2[6],rx_sym2[7],rx_sym2[8],rx_sym2[9],rx_sym2[10],rx_sym2[11],rx_sym2[12],rx_sym2[13],rx_sym2[14],rx_sym2[15]));
@@ -281,20 +281,17 @@ always #5 clk=~clk;
 	     forever begin
 	       @(posedge clk);	     
 	       if(pipe_tx_data[0]==16'h4a4a) begin
-	         repeat(3)
-	           @(posedge clk);	       
 	         $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 >TS1(%0d)",$time,ts1_sent_cnt);
                end	       
 	       if(pipe_tx_data[0]==16'h4545) begin
-	         repeat(3)
-	           @(posedge clk);	       
-	         $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 >TS2(%0d)",$time,ts2_sent_cnt);	           end
+	         $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 >TS2(%0d)",$time,ts2_sent_cnt);	           
+	     end
             end 
            end
            begin
 	     forever begin
 	       @(posedge clk);	     
-	       if(pipe_rx_data[0]==16'h4a4a)
+	       if(pipe_rx_data[0]==16'h4a4a)	       
 	       $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 <TS1(%0d)",$time,ts1_rcvd_cnt);	
 	       if(pipe_rx_data[0]==16'h4545)
 	       $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 <TS2(%0d)",$time,ts2_rcvd_cnt);	
@@ -400,23 +397,25 @@ always #5 clk=~clk;
               end
 	    end
 
-           begin
+            begin
              forever begin
                @(posedge clk);
-	       for(int i=0;i<=15;i++) begin		
-		    if(pipe_rx_data[i]==16'h0 && state_ascii_tb=="CONFIGURATION") begin
-                      rx_sym0[i]="";
-		      rx_sym1[i]="";
-                      rx_sym2[i]="";
-                      rx_sym3[i]="";
-                      rx_sym4[i]="";
-		      rx_sym5[i]="";
-		      rx_sym6[i]="";
-		      rx_sym7[i]="";
-		  end
-	     end
-	   end
-          end
+		 if(pipe_rx_data[0]==16'h0 && state_ascii_tb=="CONFIGURATION")
+	           @(posedge clk);
+	           if(pipe_rx_data[0]==16'h0 && state_ascii_tb=="CONFIGURATION") begin
+	             for(int i=0;i<=15;i++) begin		   
+                       rx_sym0[i]="";
+		       rx_sym1[i]="";
+                       rx_sym2[i]="";
+                       rx_sym3[i]="";
+                       rx_sym4[i]="";
+		       rx_sym5[i]="";
+		       rx_sym6[i]="";
+		       rx_sym7[i]="";
+	             end
+		   end
+	      end
+            end
     
             begin
               forever begin
