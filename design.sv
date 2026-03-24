@@ -179,7 +179,7 @@ module ltssm_x(input clk,
 	end
 	  for(int i=0;i<=15;i++)
 	   ltssm_states_h[i]=3;
-	   command=2;
+	   command=1;
       end
       
       default: begin

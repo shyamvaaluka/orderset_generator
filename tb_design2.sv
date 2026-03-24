@@ -31,6 +31,7 @@ module ltssm_top_2;
 always #5 clk=~clk;
 
   task send_ts1;
+    if(l != 0)	  
     @(negedge clk);
     for(int i=0;i<=15;i++)begin
      pipe_tx_data[i]=16'h4a4a;
@@ -105,6 +106,7 @@ always #5 clk=~clk;
             end//Timeout thread for states in tb begin	      
 
             begin//outer thread-0 begin
+	      if(l==0)
               @(negedge clk);
               forever begin
                 if(state_ascii_tb=="DETECT" || state_ascii_tb=="POL_ACTIVE") begin
