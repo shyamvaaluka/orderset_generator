@@ -31,7 +31,6 @@ module ltssm_top_2;
 always #5 clk=~clk;
 
   task send_ts1;
-    if(l != 0)	  
     @(negedge clk);
     for(int i=0;i<=15;i++)begin
      pipe_tx_data[i]=16'h4a4a;
@@ -103,7 +102,19 @@ always #5 clk=~clk;
 	           ts2_rcvd_cnt++;
                end
               end
-            end//Timeout thread for states in tb begin	      
+            end//Timeout thread for states in tb begin
+           
+            begin
+              forever begin
+                @(negedge clk);
+		if(state_ascii_tb == "DETECT") begin
+		  if(pipe_rx_data[0]==16'h4a4a)
+	           ts1_rcvd_cnt++;
+	          if(pipe_rx_data[0]==16'h4545)
+	           ts2_rcvd_cnt++;
+		end
+	      end
+	    end	    
 
             begin//outer thread-0 begin
 	      if(l==0)
@@ -284,6 +295,10 @@ always #5 clk=~clk;
 	       @(posedge clk);	     
 	       if(pipe_tx_data[0]==16'h4a4a) begin
 	         $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 >TS1(%0d)",$time,ts1_sent_cnt);
+		@(posedge clk);
+	         if(pipe_tx_data[0]==16'h4a4a) begin
+	         
+		 end	 
                end	       
 	       if(pipe_tx_data[0]==16'h4545) begin
 	         $fdisplay(tracker_pl,"%0tns                                                                                                                                                                                 >TS2(%0d)",$time,ts2_sent_cnt);	           
